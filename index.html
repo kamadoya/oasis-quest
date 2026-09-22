@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>OASIS QUEST β3.0.3 UMA-CHAN REWARD REPLACE</title>
+<title>OASIS QUEST β3.0.4 REWARD DISPLAY FIX</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#17131d;color:#fff;font-family:monospace;overflow-x:hidden}
 #game{max-width:980px;margin:auto;background:#28203a;min-height:100vh;padding:10px}
@@ -67,7 +67,7 @@ h1{font-size:20px;margin:4px 0}.bar{display:flex;gap:8px;flex-wrap:wrap;backgrou
 <img id="rewardImg"><div id="rewardTop"><b>KAMADOYA LEVEL UP!</b><br><span id="rewardLv"></span></div>
 <div id="rewardText"><span id="rewardMsg"></span><span id="rewardContinue">▶ Continue</span></div>
 </div></div><div id="game">
-<h1>OASIS QUEST β3.0.3 UMA-CHAN REWARD REPLACE — MULTI BATTLE</h1>
+<h1>OASIS QUEST β3.0.4 REWARD DISPLAY FIX — MULTI BATTLE</h1>
 <div class="bar"><span id="coord"></span><span id="lead"></span><span id="partyText"></span><button id="rewardHistoryBtn" type="button">★ REWARD HISTORY</button></div>
 <div id="map"><div id="tileLayer"></div><img id="hero" src="assets/kamadoya_field.png"></div>
 <div class="controls"><button onclick="step(0,-1)">▲</button><br><button onclick="step(-1,0)">◀</button><button onclick="step(1,0)">▶</button><br><button onclick="step(0,1)">▼</button></div>
@@ -136,7 +136,12 @@ function showNextPartyReward(){
  if(!pendingPartyRewards.length){rewardSequenceActive=false;return;}
  rewardSequenceActive=true;
  let r=pendingPartyRewards.shift();
- document.getElementById("rewardImg").src=partyRewardPath(r.name,r.lv);
+ let rewardImg=document.getElementById("rewardImg");
+ let rewardSrc=partyRewardPath(r.name,r.lv);
+ rewardImg.onload=()=>{rewardImg.style.display="block";};
+ rewardImg.onerror=()=>{rewardImg.style.display="none";document.getElementById("rewardMsg").textContent="Reward image could not be loaded: "+rewardSrc;};
+ rewardImg.style.display="block";
+ rewardImg.src=rewardSrc;
  document.getElementById("rewardLv").textContent=r.name+" — Lv "+r.lv+" REWARD";
  let m=partyRewardMessages[r.name]||["LEVEL UP! ♥"];
  document.getElementById("rewardMsg").textContent=m[(r.lv-1)%m.length];
@@ -259,11 +264,11 @@ function showVictory(gain,gold,bonus,rate){
 }
 function nextResult(){
  if(levelQueue.length){let q=levelQueue.shift(),n=q.name,c=chars[n],o=q.old,v=q.newv;
- for(let rewardLv=o.lv;rewardLv<=v.lv;rewardLv++){
-   if(!unlockedRewards[n].has(rewardLv)){
-     unlockReward(n,rewardLv);
-     pendingPartyRewards.push({name:n,lv:rewardLv});
-   }
+ // Always show the reward for every newly reached level.
+ // Reward History persistence must never suppress the level-up popup.
+ for(let rewardLv=o.lv+1;rewardLv<=v.lv;rewardLv++){
+   unlockReward(n,rewardLv);
+   pendingPartyRewards.push({name:n,lv:rewardLv});
  }
  saveRewardHistory();document.getElementById("ovTitle").textContent=n.toUpperCase()+" LEVEL UP!";document.getElementById("ovParty").innerHTML=`<img src="${c.victory}" alt="${n} victory">`;document.getElementById("ovBody").innerHTML=`<b>Lv ${o.lv} → ${v.lv}</b><br>HP ${o.hp} → ${v.hp} <span style="color:#7dff78">(+${v.hp-o.hp})</span> · MP ${o.mp} → ${v.mp} <span style="color:#7dff78">(+${v.mp-o.mp})</span><br>Attack ${o.atk} → ${v.atk} <span style="color:#7dff78">(+${v.atk-o.atk})</span> · Defense ${o.def} → ${v.def} <span style="color:#7dff78">(+${v.def-o.def})</span>`;return}
  if(joinQueue.length){let n=joinQueue.shift();joinedShown[n]=true;let c=chars[n];document.getElementById("ovTitle").textContent=n.toUpperCase()+" JOINED THE PARTY!";document.getElementById("ovParty").innerHTML=`<img src="${c.victory}" alt="${n} joins">`;document.getElementById("ovBody").innerHTML=`<div style="font-size:24px">★ ✦ NEW COMPANION ✦ ★</div><br>`+active().map(q=>`<b>${q}</b>`).join(" · ");return}document.getElementById("overlay").classList.remove("show");stopPartyIdle();document.getElementById("battle").classList.remove("show");inBattle=false;moving=false;document.getElementById("attackBtn").disabled=false;moving=false;render();if(pendingPartyRewards.length)setTimeout(showNextPartyReward,80)
