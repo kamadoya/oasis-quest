@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>OASIS QUEST β3.0.4 REWARD DISPLAY FIX</title>
+<title>OASIS QUEST β3.1 BETA COMPLETE</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#17131d;color:#fff;font-family:monospace;overflow-x:hidden}
 #game{max-width:980px;margin:auto;background:#28203a;min-height:100vh;padding:10px}
@@ -31,6 +31,11 @@ h1{font-size:20px;margin:4px 0}.bar{display:flex;gap:8px;flex-wrap:wrap;backgrou
 .big{font-size:42px;font-weight:900;color:#fff59d;text-shadow:3px 3px #b22}.victoryParty{display:flex;justify-content:center;align-items:flex-end;gap:8px;height:190px}
 .victoryParty img{max-height:190px;max-width:170px;object-fit:contain;image-rendering:pixelated;animation:cheer .34s steps(2) 6;transform-origin:bottom center}.victoryParty img:nth-child(2){animation-name:cheerHorse}.victoryParty img:nth-child(3){animation-delay:.08s}.victoryParty img:nth-child(4){animation-delay:.16s}@keyframes cheer{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-14px) rotate(3deg)}}@keyframes cheerHorse{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-18px) rotate(-3deg)}}
 .small{font-size:12px;color:#ddd}
+
+.actor{object-fit:contain!important;object-position:center bottom!important;background:transparent!important}
+.actor.attackPose{transform:translateX(6px) rotate(-2deg) scale(1.025)!important;transition:transform .12s ease!important}
+.actor.attackPose.strikePose{transform:translateX(12px) rotate(3deg) scale(1.05)!important}
+.enemy img{object-fit:contain!important;object-position:center bottom!important;max-width:100%!important;max-height:100%!important}
 </style><style>
 #rewardCG{position:fixed;inset:0;z-index:9999;background:#050914ee;display:none;align-items:center;justify-content:center}
 #rewardCG.show{display:flex}
@@ -67,7 +72,7 @@ h1{font-size:20px;margin:4px 0}.bar{display:flex;gap:8px;flex-wrap:wrap;backgrou
 <img id="rewardImg"><div id="rewardTop"><b>KAMADOYA LEVEL UP!</b><br><span id="rewardLv"></span></div>
 <div id="rewardText"><span id="rewardMsg"></span><span id="rewardContinue">▶ Continue</span></div>
 </div></div><div id="game">
-<h1>OASIS QUEST β3.0.4 REWARD DISPLAY FIX — MULTI BATTLE</h1>
+<h1>OASIS QUEST β3.1 BETA COMPLETE — MULTI BATTLE</h1>
 <div class="bar"><span id="coord"></span><span id="lead"></span><span id="partyText"></span><button id="rewardHistoryBtn" type="button">★ REWARD HISTORY</button></div>
 <div id="map"><div id="tileLayer"></div><img id="hero" src="assets/kamadoya_field.png"></div>
 <div class="controls"><button onclick="step(0,-1)">▲</button><br><button onclick="step(-1,0)">◀</button><button onclick="step(1,0)">▶</button><br><button onclick="step(0,1)">▼</button></div>
@@ -172,15 +177,23 @@ function closeReward(){
 }
 
 const battleSprites={
-"KAMADOYA":{idle:[A+"battle_attack/kamadoya_1.png",A+"battle_attack/kamadoya_6.png"],attack:[1,2,3,4,5,6].map(i=>A+"battle_attack/kamadoya_"+i+".png")},
-"Uma-chan":{idle:[A+"battle_attack/umachan_1.png",A+"battle_attack/umachan_6.png"],attack:[1,2,3,4,5,6].map(i=>A+"battle_attack/umachan_"+i+".png")},
-"Doowee":{idle:[A+"battle_attack/doowee_1.png",A+"battle_attack/doowee_6.png"],attack:[1,2,3,4,5,6].map(i=>A+"battle_attack/doowee_"+i+".png")},
-"Naughty":{idle:[A+"battle_attack/naughty_1.png",A+"battle_attack/naughty_6.png"],attack:[1,2,3,4,5,6].map(i=>A+"battle_attack/naughty_"+i+".png")}};
+"KAMADOYA":{idle:[A+"kamadoya_battle_fixed.png"],attack:[A+"kamadoya_battle_fixed.png"]},
+"Uma-chan":{idle:[A+"umachan_battle_fixed.png"],attack:[A+"umachan_battle_fixed.png"]},
+"Doowee":{idle:[A+"doowee_battle_fixed.png"],attack:[A+"doowee_battle_fixed.png"]},
+"Naughty":{idle:[A+"naughty_battle_fixed.png"],attack:[A+"naughty_battle_fixed.png"]}};
 let idleTick=0,idleTimer=null;
 function startPartyIdle(){clearInterval(idleTimer);idleTimer=setInterval(()=>{idleTick++;active().forEach(n=>{let e=actorEl(n),s=battleSprites[n];if(e&&!e.classList.contains("attack"))e.src=s.idle[idleTick%s.idle.length]})},260)}
 function stopPartyIdle(){clearInterval(idleTimer)}
-async function playAttackFrames(n){let e=actorEl(n),s=battleSprites[n];if(!e)return;e.classList.add("attack");for(const f of s.attack){e.src=f;await wait(95)}await wait(55);e.classList.remove("attack");e.src=s.idle[0]}
-
+async function playAttackFrames(n){
+ let e=actorEl(n);if(!e)return;
+ e.classList.add("attackPose");
+ await wait(170);
+ e.classList.add("strikePose");
+ await wait(150);
+ e.classList.remove("strikePose");
+ await wait(100);
+ e.classList.remove("attackPose");
+}
 const enemyDB={
 "Rat":[8,2,4],"Spider":[13,4,7],"Snake":[19,6,10],"Bat":[22,7,12],"Wild Boar":[32,9,16],
 "Wolf":[40,11,20],"Bear":[56,14,28],"Crocodile":[70,17,36],"Tiger":[86,20,46],"Elephant":[120,25,65]};
