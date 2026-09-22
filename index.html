@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>OASIS QUEST β3.2 MOBILE FIX</title>
+<title>OASIS QUEST β3.2.1 MOBILE UI FIX</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#17131d;color:#fff;font-family:monospace;overflow-x:hidden}
 #game{max-width:980px;margin:auto;background:#28203a;min-height:100vh;padding:10px}
@@ -152,11 +152,99 @@ html,body{max-width:100%;overflow-x:hidden}
 }
 </style>
 
+
+<style id="mobileFix321">
+@media(max-width:700px){
+  /* FIELD: viewport itself is the positioning reference; hero is always dead center */
+  #map{
+    position:relative!important;
+    overflow:hidden!important;
+    margin-left:auto!important;
+    margin-right:auto!important;
+  }
+  #hero{
+    position:absolute!important;
+    left:50%!important;
+    top:50%!important;
+    right:auto!important;
+    bottom:auto!important;
+    transform:translate(-50%,-50%)!important;
+    margin:0!important;
+    z-index:30!important;
+    width:48px!important;
+    height:58px!important;
+    object-fit:contain!important;
+    object-position:center bottom!important;
+  }
+
+  /* ENEMIES: use more of the battle field; art itself is substantially larger */
+  #enemies{
+    left:34%!important;
+    right:1%!important;
+    top:12%!important;
+    bottom:34%!important;
+    gap:1px!important;
+    align-items:flex-end!important;
+    justify-content:space-around!important;
+  }
+  .enemy{
+    width:32%!important;
+    height:94%!important;
+    min-width:0!important;
+    display:flex!important;
+    flex-direction:column!important;
+    justify-content:flex-end!important;
+  }
+  .enemy img{
+    width:100%!important;
+    height:78%!important;
+    max-width:none!important;
+    max-height:none!important;
+    object-fit:contain!important;
+    object-position:center bottom!important;
+  }
+  .enemy span{font-size:10px!important;min-height:34px!important}
+
+  /* COMMANDS: ATTACK is the primary touch target */
+  #ui{
+    grid-template-columns:42% 58%!important;
+    height:34%!important;
+  }
+  .cmd{
+    display:grid!important;
+    grid-template-rows:1.65fr 1fr 1fr 1fr!important;
+    gap:4px!important;
+  }
+  .cmd button{
+    width:100%!important;
+    min-height:43px!important;
+    font-size:15px!important;
+    padding:8px 5px!important;
+    text-align:center!important;
+    touch-action:manipulation!important;
+  }
+  .cmd button:first-child{
+    min-height:62px!important;
+    font-size:20px!important;
+    font-weight:900!important;
+    border-width:3px!important;
+  }
+  #status{font-size:10px!important}
+  #log{font-size:11px!important}
+}
+@media(max-width:380px){
+  #hero{width:44px!important;height:54px!important}
+  #enemies{left:32%!important}
+  .enemy{width:33%!important}
+  .cmd button:first-child{min-height:58px!important;font-size:19px!important}
+}
+</style>
+
 </head><body><div id="rewardCG" onclick="closeReward()"><div id="rewardFrame">
 <img id="rewardImg"><div id="rewardTop"><b>KAMADOYA LEVEL UP!</b><br><span id="rewardLv"></span></div>
 <div id="rewardText"><span id="rewardMsg"></span><span id="rewardContinue">▶ Continue</span></div>
 </div></div><div id="game">
-<h1>OASIS QUEST β3.2 MOBILE FIX — MULTI BATTLE</h1>
+<h1>OASIS QUEST β3.2.1 MOBILE UI FIX — MULTI BATTLE</h1>
 <div class="bar"><span id="coord"></span><span id="lead"></span><span id="partyText"></span><button id="rewardHistoryBtn" type="button">★ REWARD HISTORY</button></div>
 <div id="map"><div id="tileLayer"></div><img id="hero" src="assets/kamadoya_field.png"></div>
 <div class="controls"><button onclick="step(0,-1)">▲</button><br><button onclick="step(-1,0)">◀</button><button onclick="step(1,0)">▶</button><br><button onclick="step(0,1)">▼</button></div>
