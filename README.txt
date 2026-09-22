@@ -22,3 +22,17 @@
 - Multi-level jumps unlock every crossed reward level.
 - Reward History is saved in localStorage.
 - Applies to all four party members.
+
+
+β3.0.2 KAMADOYA CARD CROP FIX
+- Re-cropped the existing approved KAMADOYA Lv1-Lv20 poster; no new artwork generated.
+- Card boundaries measured from the actual gold borders instead of equal row slicing.
+- Entire card border and caption retained; neighboring cards excluded.
+- Reward History persistence fix and β2.9 attack animations retained.
+
+
+β3.0.3 UMA-CHAN REWARD REPLACE
+- Replaced all Uma-chan Lv1-Lv20 reward images with the newly approved sheet.
+- Exported each reward as a separate 1200x1600 high-quality JPG.
+- KAMADOYA rewards and β3.0.2 crop fix retained.
+- Reward History persistence and existing battle systems retained.
