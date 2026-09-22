@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>OASIS QUEST β3.0.2 BIG ATTACK BUTTON</title>
+<title>OASIS QUEST β3.0.1 REWARD HISTORY FIX</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#17131d;color:#fff;font-family:monospace;overflow-x:hidden}
 #game{max-width:980px;margin:auto;background:#28203a;min-height:100vh;padding:10px}
@@ -63,15 +63,11 @@ h1{font-size:20px;margin:4px 0}.bar{display:flex;gap:8px;flex-wrap:wrap;backgrou
 #galleryPreview img{max-width:90vw;max-height:88vh;object-fit:contain;border:4px solid #dfbd64;border-radius:10px}
 @media(max-width:600px){#galleryGrid{grid-template-columns:repeat(2,1fr)}#rewardHistoryBtn{width:100%;margin-top:6px}}
 </style>
-<style id="mobile-v3">
-html,body{width:100%;max-width:100%;overflow-x:hidden;-webkit-text-size-adjust:100%;touch-action:manipulation}#game{width:100%;max-width:980px}#map{--ts:64px}#tileLayer .tile{width:var(--ts)!important;height:var(--ts)!important}#hero{left:50%!important;top:50%!important;transform:translate(-50%,-50%);transition:none!important}#hero.walk{animation:mobileBob .18s steps(2) infinite}@keyframes mobileBob{0%,100%{transform:translate(-50%,-50%) translateY(0) rotate(-2deg)}50%{transform:translate(-50%,-50%) translateY(-4px) rotate(2deg)}}
-@media(max-width:700px){body{background:#28203a}#game{padding:6px;min-height:100%}h1{font-size:16px;text-align:center}.bar{font-size:11px;padding:5px;gap:5px}#rewardHistoryBtn{width:auto!important;margin-left:auto!important;font-size:11px;padding:6px 8px}#map{border-width:3px}#hero{width:44px;height:52px}.controls{margin:12px 0 8px}.controls button{min-width:58px;min-height:58px;font-size:25px;padding:8px;margin:3px}.small{font-size:12px;line-height:1.35;padding:0 6px 8px}#battle{padding:3px;overflow:auto}.battlebox{width:100%!important;height:calc(100dvh - 6px)!important;min-height:620px;border-width:3px!important}#battleTitle{padding:4px 8px!important}#battleTitle b{font-size:17px!important}#areaTag{font-size:11px!important;padding:5px 8px!important}#party{left:1%!important;width:31%!important;top:11%!important;height:56%!important}#party .actor{width:100px!important;height:92px!important}#party .actor.attack{transform:translateX(72px) scale(1.05)!important}#enemies{left:34%!important;right:1%!important;top:22%!important;bottom:34%!important;gap:2px!important}.enemy{width:25%!important;height:80%!important;font-size:9px!important}.enemy span{font-size:9px!important;padding:2px!important}#ui{height:31%!important;grid-template-columns:34% 66%!important}.panel{padding:4px!important;border-width:3px!important}.cmd button{font-size:13px!important;padding:7px 4px 7px 10px!important}#status,#msg{font-size:10px!important;line-height:1.3}.card{width:94vw!important;min-width:0!important;max-height:92dvh;overflow:auto;padding:14px}.big{font-size:28px}.victoryParty{height:150px}.victoryParty img{max-height:145px;max-width:120px}#rewardFrame{width:96vw;height:88dvh}#rewardTop{padding:10px 12px}#rewardTop b{font-size:24px}#rewardText{font-size:15px;left:8px;right:8px;bottom:8px;padding:9px}#galleryPanel{width:97vw;height:90dvh}#galleryHead{font-size:19px}#galleryTabs button{font-size:11px;padding:7px}#galleryGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;padding:7px}}
-</style>
 </head><body><div id="rewardCG" onclick="closeReward()"><div id="rewardFrame">
 <img id="rewardImg"><div id="rewardTop"><b>KAMADOYA LEVEL UP!</b><br><span id="rewardLv"></span></div>
 <div id="rewardText"><span id="rewardMsg"></span><span id="rewardContinue">▶ Continue</span></div>
 </div></div><div id="game">
-<h1>OASIS QUEST β3.0.2 BIG ATTACK BUTTON — MULTI BATTLE</h1>
+<h1>OASIS QUEST β3.0.1 REWARD HISTORY FIX — MULTI BATTLE</h1>
 <div class="bar"><span id="coord"></span><span id="lead"></span><span id="partyText"></span><button id="rewardHistoryBtn" type="button">★ REWARD HISTORY</button></div>
 <div id="map"><div id="tileLayer"></div><img id="hero" src="assets/kamadoya_field.png"></div>
 <div class="controls"><button onclick="step(0,-1)">▲</button><br><button onclick="step(-1,0)">◀</button><button onclick="step(1,0)">▶</button><br><button onclick="step(0,1)">▼</button></div>
@@ -118,9 +114,13 @@ const partyRewardMessages={
 };
 let pendingPartyRewards=[];
 const unlockedRewards={"KAMADOYA":new Set(),"Uma-chan":new Set(),"Doowee":new Set(),"Naughty":new Set()};
+const REWARD_SAVE_KEY="oasisQuestRewardHistoryV1";
+function loadRewardHistory(){try{const saved=JSON.parse(localStorage.getItem(REWARD_SAVE_KEY)||"{}");for(const name of Object.keys(unlockedRewards)){(Array.isArray(saved[name])?saved[name]:[]).forEach(lv=>{lv=Number(lv);if(lv>=1&&lv<=20)unlockedRewards[name].add(lv)})}}catch(e){}}
+function saveRewardHistory(){try{const data={};for(const name of Object.keys(unlockedRewards))data[name]=Array.from(unlockedRewards[name]).sort((a,b)=>a-b);localStorage.setItem(REWARD_SAVE_KEY,JSON.stringify(data))}catch(e){}}
+loadRewardHistory();
 let rewardSequenceActive=false;
 let galleryCharacter="KAMADOYA";
-function unlockReward(name,lv){if(unlockedRewards[name])unlockedRewards[name].add(Math.min(20,Math.max(1,lv)))}
+function unlockReward(name,lv){if(!unlockedRewards[name])return;lv=Math.min(20,Math.max(1,Number(lv)||1));unlockedRewards[name].add(lv);saveRewardHistory()}
 
 function partyRewardPath(name,lv){
  let n=Math.min(20,Math.max(1,lv));
@@ -167,14 +167,14 @@ function closeReward(){
 }
 
 const battleSprites={
-"KAMADOYA":{idle:[A+"kamadoya_battle_fixed.png",A+"kamadoya_battle_fixed.png"],attack:[A+"kamadoya_battle_fixed.png",A+"kamadoya_battle_fixed.png"]},
-"Uma-chan":{idle:[A+"umachan_battle_fixed.png",A+"umachan_battle_fixed.png"],attack:[A+"umachan_battle_fixed.png",A+"umachan_battle_fixed.png"]},
-"Doowee":{idle:[A+"doowee_battle_fixed.png",A+"doowee_battle_fixed.png"],attack:[A+"doowee_battle_fixed.png",A+"doowee_battle_fixed.png"]},
-"Naughty":{idle:[A+"naughty_battle_fixed.png",A+"naughty_battle_fixed.png"],attack:[A+"naughty_battle_fixed.png",A+"naughty_battle_fixed.png"]}};
+"KAMADOYA":{idle:[A+"battle_attack/kamadoya_1.png",A+"battle_attack/kamadoya_6.png"],attack:[1,2,3,4,5,6].map(i=>A+"battle_attack/kamadoya_"+i+".png")},
+"Uma-chan":{idle:[A+"battle_attack/umachan_1.png",A+"battle_attack/umachan_6.png"],attack:[1,2,3,4,5,6].map(i=>A+"battle_attack/umachan_"+i+".png")},
+"Doowee":{idle:[A+"battle_attack/doowee_1.png",A+"battle_attack/doowee_6.png"],attack:[1,2,3,4,5,6].map(i=>A+"battle_attack/doowee_"+i+".png")},
+"Naughty":{idle:[A+"battle_attack/naughty_1.png",A+"battle_attack/naughty_6.png"],attack:[1,2,3,4,5,6].map(i=>A+"battle_attack/naughty_"+i+".png")}};
 let idleTick=0,idleTimer=null;
 function startPartyIdle(){clearInterval(idleTimer);idleTimer=setInterval(()=>{idleTick++;active().forEach(n=>{let e=actorEl(n),s=battleSprites[n];if(e&&!e.classList.contains("attack"))e.src=s.idle[idleTick%s.idle.length]})},260)}
 function stopPartyIdle(){clearInterval(idleTimer)}
-async function playAttackFrames(n){let e=actorEl(n),s=battleSprites[n];if(!e)return;e.classList.add("attack");for(const f of s.attack){e.src=f;await wait(75)}await wait(70);e.classList.remove("attack");e.src=s.idle[0]}
+async function playAttackFrames(n){let e=actorEl(n),s=battleSprites[n];if(!e)return;e.classList.add("attack");for(const f of s.attack){e.src=f;await wait(95)}await wait(55);e.classList.remove("attack");e.src=s.idle[0]}
 
 const enemyDB={
 "Rat":[8,2,4],"Spider":[13,4,7],"Snake":[19,6,10],"Bat":[22,7,12],"Wild Boar":[32,9,16],
@@ -186,23 +186,23 @@ function need(lv){return Math.max(4,Math.round((20+(lv-1)*18+(lv-1)*(lv-1)*6)/6)
 function hash(a,b){let n=(a*374761393+b*668265263)^0x5bf03635;n=(n^(n>>13))*1274126177;return ((n^(n>>16))>>>0)/4294967295}
 function oasisAt(a,b){if(a===20&&b===50)return false;let d=Math.abs(a-20)+Math.abs(b-50);return hash(a,b)<(.20-Math.min(.07,d/900))}
 function terrain(a,b){if(a===20&&b===50)return"village";if(oasisAt(a,b))return"oasis";let r=hash(a+200,b-300);return r<.08?"water":r<.18?"mountain":r<.35?"forest":r<.43?"desert":"plain"}
-function fieldLayout(){
- const mobile=window.innerWidth<=700; const cols=mobile?7:11,rows=mobile?7:9; const ts=mobile?Math.max(42,Math.floor((window.innerWidth-18)/cols)):64; return {mobile,cols,rows,ts,cx:Math.floor(cols/2),cy:Math.floor(rows/2)};
-}
 function render(){
- const L=fieldLayout(); map.style.setProperty("--ts",L.ts+"px"); map.style.width=(L.cols*L.ts)+"px";map.style.height=(L.rows*L.ts)+"px"; tileLayer.innerHTML="";tileLayer.style.transform="translate(0px,0px)";tileLayer.style.transition="none";
- for(let j=-L.cy;j<=L.cy;j++)for(let i=-L.cx;i<=L.cx;i++){let a=x+i,b=y+j,t=document.createElement("div");t.className="tile "+terrain(a,b);t.style.left=(i+L.cx)*L.ts+"px";t.style.top=(j+L.cy)*L.ts+"px";t.onclick=()=>{if(Math.abs(i)+Math.abs(j)===1)step(Math.sign(i),Math.sign(j))};tileLayer.appendChild(t)}
- hero.style.left="50%";hero.style.top="50%"; document.getElementById("coord").textContent=`(${x}|${y})`; let k=chars.KAMADOYA;document.getElementById("lead").textContent=`KAMADOYA Lv${k.lv} EXP ${k.exp}/${need(k.lv)} HP ${k.hp}/${k.maxhp}`;document.getElementById("partyText").textContent="Party: "+active().map(n=>n+" Lv"+chars[n].lv).join(" / ");
+ tileLayer.innerHTML="";tileLayer.style.transform="translate(0px,0px)";tileLayer.style.transition="none";
+ const W=11,H=9;
+ for(let j=-4;j<=4;j++)for(let i=-5;i<=5;i++){let a=x+i,b=y+j,t=document.createElement("div");t.className="tile "+terrain(a,b);t.style.left=(i+5)*64+"px";t.style.top=(j+4)*64+"px";t.onclick=()=>{if(Math.abs(i)+Math.abs(j)===1)step(Math.sign(i),Math.sign(j))};tileLayer.appendChild(t)}
+ hero.style.left=5*64+5+"px";hero.style.top=4*64+3+"px";
+ document.getElementById("coord").textContent=`(${x}|${y})`;
+ let k=chars.KAMADOYA;document.getElementById("lead").textContent=`KAMADOYA Lv${k.lv} EXP ${k.exp}/${need(k.lv)} HP ${k.hp}/${k.maxhp}`;
+ document.getElementById("partyText").textContent="Party: "+active().map(n=>n+" Lv"+chars[n].lv).join(" / ");
 }
 function step(dx,dy){
  if(moving||inBattle||Math.abs(dx)+Math.abs(dy)!==1)return;
  let nx=Math.max(0,Math.min(99,x+dx)),ny=Math.max(0,Math.min(99,y+dy));if(nx===x&&ny===y)return;
  moving=true;hero.classList.add("walk");
  tileLayer.style.transition="transform .34s linear";
- const L=fieldLayout();tileLayer.style.transform=`translate(${-dx*L.ts}px,${-dy*L.ts}px)`;
+ tileLayer.style.transform=`translate(${-dx*64}px,${-dy*64}px)`;
  setTimeout(()=>{x=nx;y=ny;moving=false;hero.classList.remove("walk");render();if(oasisAt(x,y))setTimeout(startBattle,100)},350)
 }
-window.addEventListener("resize",()=>{if(!moving&&!inBattle)render()});
 document.addEventListener("keydown",e=>{if(e.key==="ArrowUp")step(0,-1);if(e.key==="ArrowDown")step(0,1);if(e.key==="ArrowLeft")step(-1,0);if(e.key==="ArrowRight")step(1,0)});
 function pool(){let d=Math.abs(x-20)+Math.abs(y-50);if(d<10)return["Rat","Spider"];if(d<22)return["Rat","Spider","Snake","Bat"];if(d<38)return["Snake","Bat","Wild Boar","Wolf"];if(d<58)return["Wild Boar","Wolf","Bear","Crocodile"];return["Bear","Crocodile","Tiger","Elephant"]}
 function count(){let r=Math.random();return r<.30?1:r<.58?2:r<.82?3:4} // 70% chance of multiple enemies
@@ -260,8 +260,12 @@ function showVictory(gain,gold,bonus,rate){
 function nextResult(){
  if(levelQueue.length){let q=levelQueue.shift(),n=q.name,c=chars[n],o=q.old,v=q.newv;
  for(let rewardLv=o.lv;rewardLv<=v.lv;rewardLv++){
-   if(!unlockedRewards[n].has(rewardLv)) queuePartyReward(n,rewardLv);
- }document.getElementById("ovTitle").textContent=n.toUpperCase()+" LEVEL UP!";document.getElementById("ovParty").innerHTML=`<img src="${c.victory}" alt="${n} victory">`;document.getElementById("ovBody").innerHTML=`<b>Lv ${o.lv} → ${v.lv}</b><br>HP ${o.hp} → ${v.hp} <span style="color:#7dff78">(+${v.hp-o.hp})</span> · MP ${o.mp} → ${v.mp} <span style="color:#7dff78">(+${v.mp-o.mp})</span><br>Attack ${o.atk} → ${v.atk} <span style="color:#7dff78">(+${v.atk-o.atk})</span> · Defense ${o.def} → ${v.def} <span style="color:#7dff78">(+${v.def-o.def})</span>`;return}
+   if(!unlockedRewards[n].has(rewardLv)){
+     unlockReward(n,rewardLv);
+     pendingPartyRewards.push({name:n,lv:rewardLv});
+   }
+ }
+ saveRewardHistory();document.getElementById("ovTitle").textContent=n.toUpperCase()+" LEVEL UP!";document.getElementById("ovParty").innerHTML=`<img src="${c.victory}" alt="${n} victory">`;document.getElementById("ovBody").innerHTML=`<b>Lv ${o.lv} → ${v.lv}</b><br>HP ${o.hp} → ${v.hp} <span style="color:#7dff78">(+${v.hp-o.hp})</span> · MP ${o.mp} → ${v.mp} <span style="color:#7dff78">(+${v.mp-o.mp})</span><br>Attack ${o.atk} → ${v.atk} <span style="color:#7dff78">(+${v.atk-o.atk})</span> · Defense ${o.def} → ${v.def} <span style="color:#7dff78">(+${v.def-o.def})</span>`;return}
  if(joinQueue.length){let n=joinQueue.shift();joinedShown[n]=true;let c=chars[n];document.getElementById("ovTitle").textContent=n.toUpperCase()+" JOINED THE PARTY!";document.getElementById("ovParty").innerHTML=`<img src="${c.victory}" alt="${n} joins">`;document.getElementById("ovBody").innerHTML=`<div style="font-size:24px">★ ✦ NEW COMPANION ✦ ★</div><br>`+active().map(q=>`<b>${q}</b>`).join(" · ");return}document.getElementById("overlay").classList.remove("show");stopPartyIdle();document.getElementById("battle").classList.remove("show");inBattle=false;moving=false;document.getElementById("attackBtn").disabled=false;moving=false;render();if(pendingPartyRewards.length)setTimeout(showNextPartyReward,80)
 }
 function defeat(){
@@ -406,125 +410,15 @@ function openGalleryPreview(name,lv){
 document.getElementById("rewardHistoryBtn").addEventListener("click",openRewardGallery);
 document.getElementById("galleryClose").addEventListener("click",closeRewardGallery);
 document.querySelectorAll("#galleryTabs button").forEach(b=>b.addEventListener("click",()=>{galleryCharacter=b.dataset.char;renderRewardGallery()}));
-</script>
-<style id="mobile-battle-fix-301">
-@media (max-width:700px){
-  #battle{padding:2px!important;overflow:hidden!important}
-  .battlebox{
-    width:100%!important;height:calc(100dvh - 4px)!important;min-height:0!important;
-    overflow:hidden!important;
-  }
-
-  /* Four party members fit above the command/status UI and cannot cover ATTACK. */
-  #party{
-    left:1%!important;top:10%!important;width:32%!important;height:57%!important;
-    display:flex!important;flex-direction:column!important;
-    align-items:center!important;justify-content:space-evenly!important;
-    gap:0!important;overflow:visible!important;pointer-events:none!important;
-  }
-  #party .actor{
-    width:100%!important;height:24%!important;max-height:112px!important;
-    object-fit:contain!important;flex:0 1 24%!important;
-    pointer-events:none!important;
-  }
-  #party .actor.attack{
-    transform:translateX(72px) translateY(-2px) scale(1.06)!important;
-  }
-
-  /* Enemy side: substantially larger art on phones. */
-  #enemies{
-    left:34%!important;right:1%!important;top:15%!important;bottom:31%!important;
-    height:auto!important;gap:2px!important;align-items:center!important;
-  }
-  .enemy{
-    width:31%!important;height:96%!important;padding:0!important;
-    display:flex!important;flex-direction:column!important;
-    justify-content:flex-end!important;align-items:center!important;
-  }
-  .enemy img{
-    width:100%!important;height:78%!important;max-height:none!important;
-    object-fit:contain!important;
-  }
-  .enemy span{
-    width:100%!important;font-size:10px!important;line-height:1.05!important;
-    padding:3px 1px!important;
-  }
-
-  /* UI always sits above sprites and remains tappable. */
-  #ui{
-    left:1%!important;right:1%!important;bottom:1%!important;height:29%!important;
-    grid-template-columns:31% 69%!important;gap:4px!important;
-    z-index:100!important;
-  }
-  #ui,.panel,.cmd,.cmd button{pointer-events:auto!important}
-  .cmd{position:relative!important;z-index:110!important}
-  .cmd button{
-    position:relative!important;z-index:111!important;
-    min-height:23%!important;font-size:14px!important;padding:5px 3px 5px 10px!important;
-  }
-  #status,#msg{font-size:10px!important;line-height:1.22!important}
+</script></body></html>
+<style id="attack-animation-v29">
+#party .actor.attack{
+  transform:none!important;
+  animation:attackPlant .50s steps(2,end) 1!important;
+}
+@keyframes attackPlant{
+  0%,100%{transform:translateX(0) translateY(0) scale(1)}
+  35%{transform:translateX(7px) translateY(-2px) scale(1.025)}
+  65%{transform:translateX(10px) translateY(0) scale(1.04)}
 }
 </style>
-<script id="mobile-battle-fix-301-js">
-(function(){
-  const attack=document.getElementById("attackBtn");
-  /* Guard against a stale disabled state when a battle is redrawn after a party join. */
-  const originalStart=window.startBattle;
-  if(typeof originalStart==="function"){
-    window.startBattle=function(){
-      if(attack) attack.disabled=false;
-      return originalStart.apply(this,arguments);
-    };
-  }
-  const originalDraw=window.drawBattle;
-  if(typeof originalDraw==="function"){
-    window.drawBattle=function(){
-      const r=originalDraw.apply(this,arguments);
-      if(attack && document.getElementById("battle").classList.contains("show") &&
-         enemies && enemies.some(e=>e.alive)) attack.disabled=false;
-      return r;
-    };
-  }
-})();
-</script>
-
-
-<style id="mobile-big-attack-302">
-@media (max-width:700px){
-  /* Make ATTACK the dominant, easy-to-hit mobile command. */
-  .cmd{
-    display:grid!important;
-    grid-template-rows:1.65fr 1fr 1fr!important;
-    gap:5px!important;
-    height:100%!important;
-  }
-  .cmd button{
-    width:100%!important;
-    min-width:0!important;
-    margin:0!important;
-    border-width:3px!important;
-    border-radius:8px!important;
-    font-weight:900!important;
-    line-height:1!important;
-    touch-action:manipulation!important;
-  }
-  #attackBtn{
-    min-height:62px!important;
-    font-size:20px!important;
-    padding:10px 4px!important;
-    position:relative!important;
-    z-index:200!important;
-  }
-  #attackBtn:before{
-    content:"⚔ ";
-    font-size:20px;
-  }
-  .cmd button:not(#attackBtn){
-    min-height:43px!important;
-    font-size:14px!important;
-    padding:6px 3px!important;
-  }
-}
-</style>
-
-</body></html>
