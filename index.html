@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>OASIS QUEST β3.0 MOBILE EDITION</title>
+<title>OASIS QUEST β3.0.2 BIG ATTACK BUTTON</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#17131d;color:#fff;font-family:monospace;overflow-x:hidden}
 #game{max-width:980px;margin:auto;background:#28203a;min-height:100vh;padding:10px}
@@ -71,7 +71,7 @@ html,body{width:100%;max-width:100%;overflow-x:hidden;-webkit-text-size-adjust:1
 <img id="rewardImg"><div id="rewardTop"><b>KAMADOYA LEVEL UP!</b><br><span id="rewardLv"></span></div>
 <div id="rewardText"><span id="rewardMsg"></span><span id="rewardContinue">▶ Continue</span></div>
 </div></div><div id="game">
-<h1>OASIS QUEST β3.0 MOBILE EDITION — MULTI BATTLE</h1>
+<h1>OASIS QUEST β3.0.2 BIG ATTACK BUTTON — MULTI BATTLE</h1>
 <div class="bar"><span id="coord"></span><span id="lead"></span><span id="partyText"></span><button id="rewardHistoryBtn" type="button">★ REWARD HISTORY</button></div>
 <div id="map"><div id="tileLayer"></div><img id="hero" src="assets/kamadoya_field.png"></div>
 <div class="controls"><button onclick="step(0,-1)">▲</button><br><button onclick="step(-1,0)">◀</button><button onclick="step(1,0)">▶</button><br><button onclick="step(0,1)">▼</button></div>
@@ -406,4 +406,125 @@ function openGalleryPreview(name,lv){
 document.getElementById("rewardHistoryBtn").addEventListener("click",openRewardGallery);
 document.getElementById("galleryClose").addEventListener("click",closeRewardGallery);
 document.querySelectorAll("#galleryTabs button").forEach(b=>b.addEventListener("click",()=>{galleryCharacter=b.dataset.char;renderRewardGallery()}));
-</script></body></html>
+</script>
+<style id="mobile-battle-fix-301">
+@media (max-width:700px){
+  #battle{padding:2px!important;overflow:hidden!important}
+  .battlebox{
+    width:100%!important;height:calc(100dvh - 4px)!important;min-height:0!important;
+    overflow:hidden!important;
+  }
+
+  /* Four party members fit above the command/status UI and cannot cover ATTACK. */
+  #party{
+    left:1%!important;top:10%!important;width:32%!important;height:57%!important;
+    display:flex!important;flex-direction:column!important;
+    align-items:center!important;justify-content:space-evenly!important;
+    gap:0!important;overflow:visible!important;pointer-events:none!important;
+  }
+  #party .actor{
+    width:100%!important;height:24%!important;max-height:112px!important;
+    object-fit:contain!important;flex:0 1 24%!important;
+    pointer-events:none!important;
+  }
+  #party .actor.attack{
+    transform:translateX(72px) translateY(-2px) scale(1.06)!important;
+  }
+
+  /* Enemy side: substantially larger art on phones. */
+  #enemies{
+    left:34%!important;right:1%!important;top:15%!important;bottom:31%!important;
+    height:auto!important;gap:2px!important;align-items:center!important;
+  }
+  .enemy{
+    width:31%!important;height:96%!important;padding:0!important;
+    display:flex!important;flex-direction:column!important;
+    justify-content:flex-end!important;align-items:center!important;
+  }
+  .enemy img{
+    width:100%!important;height:78%!important;max-height:none!important;
+    object-fit:contain!important;
+  }
+  .enemy span{
+    width:100%!important;font-size:10px!important;line-height:1.05!important;
+    padding:3px 1px!important;
+  }
+
+  /* UI always sits above sprites and remains tappable. */
+  #ui{
+    left:1%!important;right:1%!important;bottom:1%!important;height:29%!important;
+    grid-template-columns:31% 69%!important;gap:4px!important;
+    z-index:100!important;
+  }
+  #ui,.panel,.cmd,.cmd button{pointer-events:auto!important}
+  .cmd{position:relative!important;z-index:110!important}
+  .cmd button{
+    position:relative!important;z-index:111!important;
+    min-height:23%!important;font-size:14px!important;padding:5px 3px 5px 10px!important;
+  }
+  #status,#msg{font-size:10px!important;line-height:1.22!important}
+}
+</style>
+<script id="mobile-battle-fix-301-js">
+(function(){
+  const attack=document.getElementById("attackBtn");
+  /* Guard against a stale disabled state when a battle is redrawn after a party join. */
+  const originalStart=window.startBattle;
+  if(typeof originalStart==="function"){
+    window.startBattle=function(){
+      if(attack) attack.disabled=false;
+      return originalStart.apply(this,arguments);
+    };
+  }
+  const originalDraw=window.drawBattle;
+  if(typeof originalDraw==="function"){
+    window.drawBattle=function(){
+      const r=originalDraw.apply(this,arguments);
+      if(attack && document.getElementById("battle").classList.contains("show") &&
+         enemies && enemies.some(e=>e.alive)) attack.disabled=false;
+      return r;
+    };
+  }
+})();
+</script>
+
+
+<style id="mobile-big-attack-302">
+@media (max-width:700px){
+  /* Make ATTACK the dominant, easy-to-hit mobile command. */
+  .cmd{
+    display:grid!important;
+    grid-template-rows:1.65fr 1fr 1fr!important;
+    gap:5px!important;
+    height:100%!important;
+  }
+  .cmd button{
+    width:100%!important;
+    min-width:0!important;
+    margin:0!important;
+    border-width:3px!important;
+    border-radius:8px!important;
+    font-weight:900!important;
+    line-height:1!important;
+    touch-action:manipulation!important;
+  }
+  #attackBtn{
+    min-height:62px!important;
+    font-size:20px!important;
+    padding:10px 4px!important;
+    position:relative!important;
+    z-index:200!important;
+  }
+  #attackBtn:before{
+    content:"⚔ ";
+    font-size:20px;
+  }
+  .cmd button:not(#attackBtn){
+    min-height:43px!important;
+    font-size:14px!important;
+    padding:6px 3px!important;
+  }
+}
+</style>
+
+</body></html>
