@@ -14,3 +14,11 @@
 - Enemy animal artwork enlarged substantially while preserving contain/no clipping.
 - ATTACK button enlarged as the primary touch target; other commands enlarged too.
 - Desktop layout unchanged.
+
+
+β3.2.2 PORTRAIT FIELD/BATTLE FIX
+- Portrait field is an exact square 7x7 viewport.
+- KAMADOYA is scaled below one tile and centered inside the center tile.
+- Added portrait field tap movement: tap a direction from center = exactly one orthogonal tile.
+- Portrait battle now uses full viewport height and substantially larger enemy art.
+- Existing D-pad, rewards, assets and desktop layout retained.

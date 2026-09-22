@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>OASIS QUEST β3.2.1 MOBILE UI FIX</title>
+<title>OASIS QUEST β3.2.2 PORTRAIT FIX</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#17131d;color:#fff;font-family:monospace;overflow-x:hidden}
 #game{max-width:980px;margin:auto;background:#28203a;min-height:100vh;padding:10px}
@@ -240,11 +240,87 @@ html,body{max-width:100%;overflow-x:hidden}
 }
 </style>
 
+
+<style id="portraitFix322">
+@media(max-width:700px) and (orientation:portrait){
+  /* Exact 7x7 board: every visible cell has the same size. */
+  #map{
+    width:calc(100vw - 12px)!important;
+    height:calc(100vw - 12px)!important;
+    max-width:448px!important;
+    max-height:448px!important;
+    aspect-ratio:1/1!important;
+    position:relative!important;
+    overflow:hidden!important;
+    touch-action:manipulation!important;
+  }
+
+  /* Hero occupies ONE tile, with feet anchored at the center tile's bottom. */
+  #hero{
+    position:absolute!important;
+    left:50%!important;
+    top:50%!important;
+    width:calc((100% / 7) * .72)!important;
+    height:calc((100% / 7) * .92)!important;
+    max-width:46px!important;
+    max-height:59px!important;
+    transform:translate(-50%,-50%)!important;
+    transform-origin:center center!important;
+    object-fit:contain!important;
+    object-position:center bottom!important;
+    pointer-events:none!important;
+    z-index:40!important;
+  }
+
+  /* Battle takes most of portrait viewport instead of staying PC-shaped. */
+  .battlebox{
+    width:100vw!important;
+    height:100dvh!important;
+    min-height:100dvh!important;
+    max-height:none!important;
+    border-left:0!important;
+    border-right:0!important;
+    border-radius:0!important;
+  }
+  #party{left:1%!important;top:10%!important;width:30%!important;height:51%!important}
+  #party .actor{width:100%!important;height:23%!important;max-height:112px!important}
+  #enemies{
+    left:29%!important;
+    right:0!important;
+    top:8%!important;
+    bottom:32%!important;
+    height:auto!important;
+    gap:0!important;
+    justify-content:space-evenly!important;
+  }
+  .enemy{
+    width:34%!important;
+    height:100%!important;
+    max-width:none!important;
+  }
+  .enemy img{
+    width:100%!important;
+    height:84%!important;
+    max-width:none!important;
+    max-height:none!important;
+    object-fit:contain!important;
+    object-position:center center!important;
+  }
+  .enemy span{
+    font-size:12px!important;
+    min-height:38px!important;
+    padding:4px 1px!important;
+  }
+  #ui{left:0!important;right:0!important;bottom:0!important;height:32%!important;grid-template-columns:43% 57%!important}
+  .cmd button:first-child{min-height:66px!important;font-size:21px!important}
+}
+</style>
+
 </head><body><div id="rewardCG" onclick="closeReward()"><div id="rewardFrame">
 <img id="rewardImg"><div id="rewardTop"><b>KAMADOYA LEVEL UP!</b><br><span id="rewardLv"></span></div>
 <div id="rewardText"><span id="rewardMsg"></span><span id="rewardContinue">▶ Continue</span></div>
 </div></div><div id="game">
-<h1>OASIS QUEST β3.2.1 MOBILE UI FIX — MULTI BATTLE</h1>
+<h1>OASIS QUEST β3.2.2 PORTRAIT FIX — MULTI BATTLE</h1>
 <div class="bar"><span id="coord"></span><span id="lead"></span><span id="partyText"></span><button id="rewardHistoryBtn" type="button">★ REWARD HISTORY</button></div>
 <div id="map"><div id="tileLayer"></div><img id="hero" src="assets/kamadoya_field.png"></div>
 <div class="controls"><button onclick="step(0,-1)">▲</button><br><button onclick="step(-1,0)">◀</button><button onclick="step(1,0)">▶</button><br><button onclick="step(0,1)">▼</button></div>
@@ -600,7 +676,38 @@ function openGalleryPreview(name,lv){
 document.getElementById("rewardHistoryBtn").addEventListener("click",openRewardGallery);
 document.getElementById("galleryClose").addEventListener("click",closeRewardGallery);
 document.querySelectorAll("#galleryTabs button").forEach(b=>b.addEventListener("click",()=>{galleryCharacter=b.dataset.char;renderRewardGallery()}));
-</script></body></html>
+</script>
+<script id="portraitTapMove322">
+(function(){
+ function portraitFieldTap(ev){
+   if(!window.matchMedia("(max-width:700px) and (orientation:portrait)").matches) return;
+   const map=document.getElementById("map");
+   if(!map || map.offsetParent===null) return;
+   if(ev.target && (ev.target.closest("button") || ev.target.closest("#rewardHistoryBtn"))) return;
+
+   const r=map.getBoundingClientRect();
+   const point=(ev.changedTouches&&ev.changedTouches[0]) || ev;
+   const dx=point.clientX-(r.left+r.width/2);
+   const dy=point.clientY-(r.top+r.height/2);
+   if(Math.abs(dx)<r.width/14 && Math.abs(dy)<r.height/14) return;
+
+   let key;
+   if(Math.abs(dx)>Math.abs(dy)) key=dx>0?"ArrowRight":"ArrowLeft";
+   else key=dy>0?"ArrowDown":"ArrowUp";
+
+   ev.preventDefault();
+   /* Reuse the game's existing keyboard movement path: exactly one tile. */
+   window.dispatchEvent(new KeyboardEvent("keydown",{key:key,code:key,bubbles:true}));
+ }
+ const map=document.getElementById("map");
+ if(map){
+   map.addEventListener("click",portraitFieldTap,{passive:false});
+   map.addEventListener("touchend",portraitFieldTap,{passive:false});
+ }
+})();
+</script>
+
+</body></html>
 <style id="attack-animation-v29">
 #party .actor.attack{
   transform:none!important;
