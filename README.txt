@@ -37,3 +37,9 @@
 - KAMADOYA rewards and β3.0.2 crop fix retained.
 - Reward History persistence and existing battle systems retained.
 \n\nβ3.1 BETA COMPLETE\n- Restored field tiles, village/oasis art, battle oasis background and all 10 enemy images.\n- Restored Doowee and Naughty Lv1-Lv20 reward galleries.\n- Preserved working KAMADOYA and Uma-chan rewards and Reward History persistence.\n- Replaced visibly chopped battle attack-sheet frames with clean standalone transparent party sprites and short planted attack motion.\n- Verified all critical visual assets exist and decode successfully.\n
+
+β3.1.1 UMA-CHAN Lv15-20 FIX
+- Corrected source geometry: third row is 7 columns, not 6.
+- Re-cut Lv15-Lv19 from columns 1-5.
+- Skipped the duplicate Lv19 source card in column 6.
+- Lv20 now uses the final Queen of the Oasis card in column 7.
