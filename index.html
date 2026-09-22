@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>OASIS QUEST β3.1.1 UMA-CHAN REWARD FIX</title>
+<title>OASIS QUEST β3.2 MOBILE FIX</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#17131d;color:#fff;font-family:monospace;overflow-x:hidden}
 #game{max-width:980px;margin:auto;background:#28203a;min-height:100vh;padding:10px}
@@ -68,11 +68,95 @@ h1{font-size:20px;margin:4px 0}.bar{display:flex;gap:8px;flex-wrap:wrap;backgrou
 #galleryPreview img{max-width:90vw;max-height:88vh;object-fit:contain;border:4px solid #dfbd64;border-radius:10px}
 @media(max-width:600px){#galleryGrid{grid-template-columns:repeat(2,1fr)}#rewardHistoryBtn{width:100%;margin-top:6px}}
 </style>
+
+<style id="mobileFix32">
+html,body{max-width:100%;overflow-x:hidden}
+@media(max-width:700px){
+ body{margin:0!important}
+ #game{width:100%!important;max-width:none!important;min-height:100dvh!important;padding:4px!important;box-sizing:border-box}
+ h1{font-size:18px!important;line-height:1.15!important;margin:4px 0 7px!important;white-space:normal!important}
+ .bar{display:flex!important;flex-wrap:wrap!important;gap:4px!important;font-size:12px!important;padding:5px!important}
+ #coord,#lead,#partyText{min-width:0!important;white-space:normal!important}
+ #rewardHistoryBtn{order:10;width:100%!important;margin:3px 0 0!important;padding:8px!important}
+
+ #map{width:min(100%,448px)!important;height:auto!important;aspect-ratio:7/7!important;border-width:3px!important}
+ #tileLayer{transform-origin:center center}
+ #hero{width:42px!important;height:50px!important}
+ #pad{margin:7px auto 2px!important;transform:scale(.88);transform-origin:top center}
+
+ #battle{padding:3px!important;overflow:auto!important}
+ .battlebox{width:100%!important;max-width:none!important;height:auto!important;min-height:680px!important;
+   border-width:3px!important;box-sizing:border-box!important;background-position:center!important}
+ #battleTitle{left:5px!important;top:5px!important;padding:5px 8px!important;border-width:2px!important}
+ #battleTitle b{font-size:16px!important}
+ #battleTitle small{font-size:9px!important}
+ #areaTag{right:5px!important;top:5px!important;padding:5px 8px!important;border-width:2px!important;font-size:11px!important}
+
+ #party{left:1%!important;top:12%!important;width:34%!important;height:48%!important}
+ #party .actor{width:94px!important;height:88px!important;max-width:100%!important}
+ #party .actor.attack{transform:none!important}
+ #enemies{left:37%!important;right:1%!important;top:17%!important;bottom:35%!important;gap:2px!important;align-items:flex-end!important}
+ .enemy{width:25%!important;height:78%!important;min-width:0!important}
+ .enemy img{height:60%!important}
+ .enemy span{font-size:9px!important;padding:3px 1px!important;overflow-wrap:anywhere!important}
+ .enemy.enemyAttack{transform:none!important}
+
+ #ui{position:absolute!important;left:1%!important;right:1%!important;bottom:1%!important;height:31%!important;
+   grid-template-columns:34% 66%!important;gap:3px!important}
+ .panel{padding:5px!important;border-width:2px!important;min-width:0!important}
+ .cmd button{font-size:12px!important;padding:7px 4px 7px 10px!important;min-height:34px!important}
+ #status{font-size:10px!important;line-height:1.3!important;overflow-wrap:anywhere!important}
+ #log{font-size:11px!important;line-height:1.35!important}
+
+ #overlay{padding:6px!important;overflow:auto!important}
+ .card{width:94vw!important;max-width:94vw!important;min-width:0!important;padding:12px!important;border-width:3px!important;box-sizing:border-box!important}
+ #ovTitle{font-size:24px!important}
+ .victoryParty{gap:3px!important;flex-wrap:wrap!important}
+ .victoryParty img,#ovParty img{max-width:42vw!important;max-height:150px!important}
+
+ #rewardCG{padding:4px!important;box-sizing:border-box!important}
+ #rewardFrame{width:96vw!important;height:auto!important;max-height:94dvh!important;aspect-ratio:3/4!important;border-width:3px!important}
+ #rewardTop{padding:9px 11px!important}
+ #rewardTop b{font-size:22px!important}
+ #rewardText{left:8px!important;right:8px!important;bottom:8px!important;padding:8px 10px!important;font-size:14px!important}
+
+ #rewardGallery{padding:4px!important;align-items:flex-start!important}
+ #galleryPanel{width:98vw!important;height:94dvh!important;border-width:3px!important}
+ #galleryHeader{padding:8px!important;position:sticky!important;top:0!important;z-index:4!important}
+ #galleryHeader h2{font-size:20px!important}
+ #galleryTabs{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:5px!important;padding:7px!important}
+ #galleryTabs button{min-width:0!important;font-size:11px!important;padding:7px 3px!important}
+ #galleryGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important;padding:7px!important}
+ .rewardThumb{min-height:0!important}
+ .rewardThumb b{font-size:12px!important;padding:5px!important}
+ #galleryPreview img{max-width:96vw!important;max-height:90dvh!important}
+
+ @keyframes partyStrikeMobile{
+   0%,100%{transform:translateX(0) translateY(0) scale(1)}
+   35%{transform:translateX(7px) translateY(-3px) rotate(-2deg) scale(1.03)}
+   58%{transform:translateX(13px) translateY(-4px) rotate(3deg) scale(1.06)}
+ }
+ @keyframes enemyStrikeMobile{
+   0%,100%{transform:translateX(0) scale(1)}
+   45%{transform:translateX(-8px) scale(1.04)}
+   65%{transform:translateX(-14px) scale(1.07)}
+ }
+ #party .actor.attack{animation:partyStrikeMobile .42s ease 1!important}
+ .enemy.enemyAttack{animation:enemyStrikeMobile .42s ease 1!important}
+}
+@media(max-width:380px){
+ #map{width:100%!important}
+ #party .actor{width:78px!important;height:76px!important}
+ #ui{grid-template-columns:36% 64%!important}
+ #status{font-size:9px!important}
+}
+</style>
+
 </head><body><div id="rewardCG" onclick="closeReward()"><div id="rewardFrame">
 <img id="rewardImg"><div id="rewardTop"><b>KAMADOYA LEVEL UP!</b><br><span id="rewardLv"></span></div>
 <div id="rewardText"><span id="rewardMsg"></span><span id="rewardContinue">▶ Continue</span></div>
 </div></div><div id="game">
-<h1>OASIS QUEST β3.1.1 UMA-CHAN REWARD FIX — MULTI BATTLE</h1>
+<h1>OASIS QUEST β3.2 MOBILE FIX — MULTI BATTLE</h1>
 <div class="bar"><span id="coord"></span><span id="lead"></span><span id="partyText"></span><button id="rewardHistoryBtn" type="button">★ REWARD HISTORY</button></div>
 <div id="map"><div id="tileLayer"></div><img id="hero" src="assets/kamadoya_field.png"></div>
 <div class="controls"><button onclick="step(0,-1)">▲</button><br><button onclick="step(-1,0)">◀</button><button onclick="step(1,0)">▶</button><br><button onclick="step(0,1)">▼</button></div>
