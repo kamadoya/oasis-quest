@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>OASIS QUEST β2.8.2</title>
+<title>OASIS QUEST β3.0 MOBILE EDITION</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#17131d;color:#fff;font-family:monospace;overflow-x:hidden}
 #game{max-width:980px;margin:auto;background:#28203a;min-height:100vh;padding:10px}
@@ -63,11 +63,15 @@ h1{font-size:20px;margin:4px 0}.bar{display:flex;gap:8px;flex-wrap:wrap;backgrou
 #galleryPreview img{max-width:90vw;max-height:88vh;object-fit:contain;border:4px solid #dfbd64;border-radius:10px}
 @media(max-width:600px){#galleryGrid{grid-template-columns:repeat(2,1fr)}#rewardHistoryBtn{width:100%;margin-top:6px}}
 </style>
+<style id="mobile-v3">
+html,body{width:100%;max-width:100%;overflow-x:hidden;-webkit-text-size-adjust:100%;touch-action:manipulation}#game{width:100%;max-width:980px}#map{--ts:64px}#tileLayer .tile{width:var(--ts)!important;height:var(--ts)!important}#hero{left:50%!important;top:50%!important;transform:translate(-50%,-50%);transition:none!important}#hero.walk{animation:mobileBob .18s steps(2) infinite}@keyframes mobileBob{0%,100%{transform:translate(-50%,-50%) translateY(0) rotate(-2deg)}50%{transform:translate(-50%,-50%) translateY(-4px) rotate(2deg)}}
+@media(max-width:700px){body{background:#28203a}#game{padding:6px;min-height:100%}h1{font-size:16px;text-align:center}.bar{font-size:11px;padding:5px;gap:5px}#rewardHistoryBtn{width:auto!important;margin-left:auto!important;font-size:11px;padding:6px 8px}#map{border-width:3px}#hero{width:44px;height:52px}.controls{margin:12px 0 8px}.controls button{min-width:58px;min-height:58px;font-size:25px;padding:8px;margin:3px}.small{font-size:12px;line-height:1.35;padding:0 6px 8px}#battle{padding:3px;overflow:auto}.battlebox{width:100%!important;height:calc(100dvh - 6px)!important;min-height:620px;border-width:3px!important}#battleTitle{padding:4px 8px!important}#battleTitle b{font-size:17px!important}#areaTag{font-size:11px!important;padding:5px 8px!important}#party{left:1%!important;width:31%!important;top:11%!important;height:56%!important}#party .actor{width:100px!important;height:92px!important}#party .actor.attack{transform:translateX(72px) scale(1.05)!important}#enemies{left:34%!important;right:1%!important;top:22%!important;bottom:34%!important;gap:2px!important}.enemy{width:25%!important;height:80%!important;font-size:9px!important}.enemy span{font-size:9px!important;padding:2px!important}#ui{height:31%!important;grid-template-columns:34% 66%!important}.panel{padding:4px!important;border-width:3px!important}.cmd button{font-size:13px!important;padding:7px 4px 7px 10px!important}#status,#msg{font-size:10px!important;line-height:1.3}.card{width:94vw!important;min-width:0!important;max-height:92dvh;overflow:auto;padding:14px}.big{font-size:28px}.victoryParty{height:150px}.victoryParty img{max-height:145px;max-width:120px}#rewardFrame{width:96vw;height:88dvh}#rewardTop{padding:10px 12px}#rewardTop b{font-size:24px}#rewardText{font-size:15px;left:8px;right:8px;bottom:8px;padding:9px}#galleryPanel{width:97vw;height:90dvh}#galleryHead{font-size:19px}#galleryTabs button{font-size:11px;padding:7px}#galleryGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;padding:7px}}
+</style>
 </head><body><div id="rewardCG" onclick="closeReward()"><div id="rewardFrame">
 <img id="rewardImg"><div id="rewardTop"><b>KAMADOYA LEVEL UP!</b><br><span id="rewardLv"></span></div>
 <div id="rewardText"><span id="rewardMsg"></span><span id="rewardContinue">▶ Continue</span></div>
 </div></div><div id="game">
-<h1>OASIS QUEST β2.8.2 — MULTI BATTLE</h1>
+<h1>OASIS QUEST β3.0 MOBILE EDITION — MULTI BATTLE</h1>
 <div class="bar"><span id="coord"></span><span id="lead"></span><span id="partyText"></span><button id="rewardHistoryBtn" type="button">★ REWARD HISTORY</button></div>
 <div id="map"><div id="tileLayer"></div><img id="hero" src="assets/kamadoya_field.png"></div>
 <div class="controls"><button onclick="step(0,-1)">▲</button><br><button onclick="step(-1,0)">◀</button><button onclick="step(1,0)">▶</button><br><button onclick="step(0,1)">▼</button></div>
@@ -182,23 +186,23 @@ function need(lv){return Math.max(4,Math.round((20+(lv-1)*18+(lv-1)*(lv-1)*6)/6)
 function hash(a,b){let n=(a*374761393+b*668265263)^0x5bf03635;n=(n^(n>>13))*1274126177;return ((n^(n>>16))>>>0)/4294967295}
 function oasisAt(a,b){if(a===20&&b===50)return false;let d=Math.abs(a-20)+Math.abs(b-50);return hash(a,b)<(.20-Math.min(.07,d/900))}
 function terrain(a,b){if(a===20&&b===50)return"village";if(oasisAt(a,b))return"oasis";let r=hash(a+200,b-300);return r<.08?"water":r<.18?"mountain":r<.35?"forest":r<.43?"desert":"plain"}
+function fieldLayout(){
+ const mobile=window.innerWidth<=700; const cols=mobile?7:11,rows=mobile?7:9; const ts=mobile?Math.max(42,Math.floor((window.innerWidth-18)/cols)):64; return {mobile,cols,rows,ts,cx:Math.floor(cols/2),cy:Math.floor(rows/2)};
+}
 function render(){
- tileLayer.innerHTML="";tileLayer.style.transform="translate(0px,0px)";tileLayer.style.transition="none";
- const W=11,H=9;
- for(let j=-4;j<=4;j++)for(let i=-5;i<=5;i++){let a=x+i,b=y+j,t=document.createElement("div");t.className="tile "+terrain(a,b);t.style.left=(i+5)*64+"px";t.style.top=(j+4)*64+"px";t.onclick=()=>{if(Math.abs(i)+Math.abs(j)===1)step(Math.sign(i),Math.sign(j))};tileLayer.appendChild(t)}
- hero.style.left=5*64+5+"px";hero.style.top=4*64+3+"px";
- document.getElementById("coord").textContent=`(${x}|${y})`;
- let k=chars.KAMADOYA;document.getElementById("lead").textContent=`KAMADOYA Lv${k.lv} EXP ${k.exp}/${need(k.lv)} HP ${k.hp}/${k.maxhp}`;
- document.getElementById("partyText").textContent="Party: "+active().map(n=>n+" Lv"+chars[n].lv).join(" / ");
+ const L=fieldLayout(); map.style.setProperty("--ts",L.ts+"px"); map.style.width=(L.cols*L.ts)+"px";map.style.height=(L.rows*L.ts)+"px"; tileLayer.innerHTML="";tileLayer.style.transform="translate(0px,0px)";tileLayer.style.transition="none";
+ for(let j=-L.cy;j<=L.cy;j++)for(let i=-L.cx;i<=L.cx;i++){let a=x+i,b=y+j,t=document.createElement("div");t.className="tile "+terrain(a,b);t.style.left=(i+L.cx)*L.ts+"px";t.style.top=(j+L.cy)*L.ts+"px";t.onclick=()=>{if(Math.abs(i)+Math.abs(j)===1)step(Math.sign(i),Math.sign(j))};tileLayer.appendChild(t)}
+ hero.style.left="50%";hero.style.top="50%"; document.getElementById("coord").textContent=`(${x}|${y})`; let k=chars.KAMADOYA;document.getElementById("lead").textContent=`KAMADOYA Lv${k.lv} EXP ${k.exp}/${need(k.lv)} HP ${k.hp}/${k.maxhp}`;document.getElementById("partyText").textContent="Party: "+active().map(n=>n+" Lv"+chars[n].lv).join(" / ");
 }
 function step(dx,dy){
  if(moving||inBattle||Math.abs(dx)+Math.abs(dy)!==1)return;
  let nx=Math.max(0,Math.min(99,x+dx)),ny=Math.max(0,Math.min(99,y+dy));if(nx===x&&ny===y)return;
  moving=true;hero.classList.add("walk");
  tileLayer.style.transition="transform .34s linear";
- tileLayer.style.transform=`translate(${-dx*64}px,${-dy*64}px)`;
+ const L=fieldLayout();tileLayer.style.transform=`translate(${-dx*L.ts}px,${-dy*L.ts}px)`;
  setTimeout(()=>{x=nx;y=ny;moving=false;hero.classList.remove("walk");render();if(oasisAt(x,y))setTimeout(startBattle,100)},350)
 }
+window.addEventListener("resize",()=>{if(!moving&&!inBattle)render()});
 document.addEventListener("keydown",e=>{if(e.key==="ArrowUp")step(0,-1);if(e.key==="ArrowDown")step(0,1);if(e.key==="ArrowLeft")step(-1,0);if(e.key==="ArrowRight")step(1,0)});
 function pool(){let d=Math.abs(x-20)+Math.abs(y-50);if(d<10)return["Rat","Spider"];if(d<22)return["Rat","Spider","Snake","Bat"];if(d<38)return["Snake","Bat","Wild Boar","Wolf"];if(d<58)return["Wild Boar","Wolf","Bear","Crocodile"];return["Bear","Crocodile","Tiger","Elephant"]}
 function count(){let r=Math.random();return r<.30?1:r<.58?2:r<.82?3:4} // 70% chance of multiple enemies
