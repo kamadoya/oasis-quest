@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>OASIS QUEST β3.3.1 MOBILE CONSISTENCY</title>
+<title>OASIS QUEST β3.3.5 ALL PARTY BATTLE ART</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#17131d;color:#fff;font-family:monospace;overflow-x:hidden}
 #game{max-width:980px;margin:auto;background:#28203a;min-height:100vh;padding:10px}
@@ -413,11 +413,27 @@ html,body{max-width:100%;overflow-x:hidden}
 }
 </style>
 
+
+<style id="coordFieldOnly332">
+/* Coordinates belong to the FIELD only. */
+#map[hidden] #coordRailX,#map[hidden] #coordRailY{display:none!important}
+body:has(#battle:not([hidden])) #coordRailX,
+body:has(#battle:not([hidden])) #coordRailY,
+body:has(#overlay:not([hidden])) #coordRailX,
+body:has(#overlay:not([hidden])) #coordRailY,
+body:has(#rewardCG:not([hidden])) #coordRailX,
+body:has(#rewardCG:not([hidden])) #coordRailY,
+body:has(#rewardGallery:not([hidden])) #coordRailX,
+body:has(#rewardGallery:not([hidden])) #coordRailY{
+ display:none!important;
+}
+</style>
+
 </head><body><div id="rewardCG" onclick="closeReward()"><div id="rewardFrame">
 <img id="rewardImg"><div id="rewardTop"><b>KAMADOYA LEVEL UP!</b><br><span id="rewardLv"></span></div>
 <div id="rewardText"><span id="rewardMsg"></span><span id="rewardContinue">▶ Continue</span></div>
 </div></div><div id="game">
-<h1>OASIS QUEST β3.3.1 MOBILE CONSISTENCY — MULTI BATTLE</h1>
+<h1>OASIS QUEST β3.3.5 ALL PARTY BATTLE ART — MULTI BATTLE</h1>
 <div class="bar"><span id="coord"></span><span id="lead"></span><span id="partyText"></span><button id="rewardHistoryBtn" type="button">★ REWARD HISTORY</button></div>
 <div id="map"><div id="coordRailY" aria-hidden="true"></div><div id="coordRailX" aria-hidden="true"></div><div id="tileLayer"></div><img id="hero" src="assets/kamadoya_field.png"></div>
 <div class="controls"><button onclick="step(0,-1)">▲</button><br><button onclick="step(-1,0)">◀</button><button onclick="step(1,0)">▶</button><br><button onclick="step(0,1)">▼</button></div>
@@ -858,6 +874,36 @@ document.querySelectorAll("#galleryTabs button").forEach(b=>b.addEventListener("
    clearTimeout(window.__oqResize331);
    window.__oqResize331=setTimeout(syncFieldAfterViewportChange,120);
  });
+})();
+</script>
+
+
+<script id="coordFieldOnly332js">
+(function(){
+ const map=document.getElementById("map");
+ const battle=document.getElementById("battle");
+ const overlay=document.getElementById("overlay");
+ const reward=document.getElementById("rewardCG");
+ const gallery=document.getElementById("rewardGallery");
+ const rx=document.getElementById("coordRailX");
+ const ry=document.getElementById("coordRailY");
+ function visible(el){
+   if(!el)return false;
+   if(el.hidden)return false;
+   const s=getComputedStyle(el);
+   return s.display!=="none" && s.visibility!=="hidden";
+ }
+ function syncCoordVisibility(){
+   if(!rx||!ry)return;
+   const fieldVisible=visible(map) && !visible(battle) && !visible(overlay) && !visible(reward) && !visible(gallery);
+   rx.style.display=fieldVisible?"grid":"none";
+   ry.style.display=fieldVisible?"grid":"none";
+ }
+ [map,battle,overlay,reward,gallery].filter(Boolean).forEach(function(el){
+   new MutationObserver(syncCoordVisibility).observe(el,{attributes:true,attributeFilter:["hidden","style","class"]});
+ });
+ document.addEventListener("click",function(){requestAnimationFrame(syncCoordVisibility)},true);
+ setTimeout(syncCoordVisibility,0);
 })();
 </script>
 
