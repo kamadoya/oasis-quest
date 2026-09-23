@@ -46,3 +46,10 @@
 - Doowee: approved Gaul/Celtic green battle art.
 - Naughty: approved Roman cavalry art riding Equites Caesaris.
 - Existing party progression, battle logic, mobile fixes, field coordinates and rewards retained.
+
+
+β3.4 OPENING TITLE
+- Added the approved KAMADOYA + Uma-chan OASIS QUEST title artwork as the opening screen.
+- NEW GAME starts the existing field game; tapping the title art or Enter/Space also starts.
+- Desktop and mobile opening layouts included.
+- β3.3.5 party battle art and all existing gameplay retained.

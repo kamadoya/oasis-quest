@@ -429,11 +429,41 @@ body:has(#rewardGallery:not([hidden])) #coordRailY{
 }
 </style>
 
-</head><body><div id="rewardCG" onclick="closeReward()"><div id="rewardFrame">
+
+<style id="openingTitle340">
+#openingScreen{
+ position:fixed;inset:0;z-index:9999;background:#0b1730;
+ display:flex;align-items:center;justify-content:center;overflow:hidden;
+}
+#openingScreen.hidden{display:none}
+#openingScreen img{
+ width:100%;height:100%;object-fit:contain;background:#0b1730;
+}
+#openingStart{
+ position:absolute;left:50%;bottom:4%;transform:translateX(-50%);
+ min-width:210px;min-height:52px;padding:10px 26px;
+ border:3px solid #f2cf78;border-radius:10px;
+ background:rgba(9,39,78,.94);color:#fff2bd;
+ font:900 20px Georgia,serif;letter-spacing:1px;
+ box-shadow:0 3px 0 #6e4518;cursor:pointer;
+}
+#openingStart:active{transform:translate(-50%,2px)}
+@media(max-width:700px) and (orientation:portrait){
+ #openingScreen{background:#11172b}
+ #openingScreen img{object-fit:cover;object-position:48% center}
+ #openingStart{bottom:3%;min-width:180px;min-height:48px;font-size:17px}
+}
+</style>
+
+</head><body><div id="openingScreen" role="dialog" aria-label="OASIS QUEST title screen">
+<img src="assets/opening_title.png" alt="OASIS QUEST title art featuring KAMADOYA and Uma-chan">
+<button id="openingStart" type="button">▶ NEW GAME</button>
+</div>
+<div id="rewardCG" onclick="closeReward()"><div id="rewardFrame">
 <img id="rewardImg"><div id="rewardTop"><b>KAMADOYA LEVEL UP!</b><br><span id="rewardLv"></span></div>
 <div id="rewardText"><span id="rewardMsg"></span><span id="rewardContinue">▶ Continue</span></div>
 </div></div><div id="game">
-<h1>OASIS QUEST β3.3.5 ALL PARTY BATTLE ART — MULTI BATTLE</h1>
+<h1>OASIS QUEST β3.4 OPENING TITLE — MULTI BATTLE</h1>
 <div class="bar"><span id="coord"></span><span id="lead"></span><span id="partyText"></span><button id="rewardHistoryBtn" type="button">★ REWARD HISTORY</button></div>
 <div id="map"><div id="coordRailY" aria-hidden="true"></div><div id="coordRailX" aria-hidden="true"></div><div id="tileLayer"></div><img id="hero" src="assets/kamadoya_field.png"></div>
 <div class="controls"><button onclick="step(0,-1)">▲</button><br><button onclick="step(-1,0)">◀</button><button onclick="step(1,0)">▶</button><br><button onclick="step(0,1)">▼</button></div>
@@ -904,6 +934,29 @@ document.querySelectorAll("#galleryTabs button").forEach(b=>b.addEventListener("
  });
  document.addEventListener("click",function(){requestAnimationFrame(syncCoordVisibility)},true);
  setTimeout(syncCoordVisibility,0);
+})();
+</script>
+
+
+<script id="openingTitle340js">
+(function(){
+ const screen=document.getElementById("openingScreen");
+ const start=document.getElementById("openingStart");
+ function beginGame(){
+   if(!screen)return;
+   screen.classList.add("hidden");
+   screen.setAttribute("aria-hidden","true");
+   if(typeof render==="function") requestAnimationFrame(function(){render();});
+ }
+ if(start) start.addEventListener("click",beginGame);
+ if(screen) screen.addEventListener("click",function(e){
+   if(e.target===screen || e.target.tagName==="IMG") beginGame();
+ });
+ document.addEventListener("keydown",function(e){
+   if(screen && !screen.classList.contains("hidden") && (e.key==="Enter"||e.key===" ")){
+     e.preventDefault();beginGame();
+   }
+ });
 })();
 </script>
 
