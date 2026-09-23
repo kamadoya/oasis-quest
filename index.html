@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>OASIS QUEST β3.2.2 PORTRAIT FIX</title>
+<title>OASIS QUEST β3.2.3 PORTRAIT TILE FIX</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#17131d;color:#fff;font-family:monospace;overflow-x:hidden}
 #game{max-width:980px;margin:auto;background:#28203a;min-height:100vh;padding:10px}
@@ -316,11 +316,29 @@ html,body{max-width:100%;overflow-x:hidden}
 }
 </style>
 
+
+<style id="portraitTileCenter323">
+@media(max-width:700px) and (orientation:portrait){
+ #map{box-sizing:border-box!important}
+ #tileLayer{position:absolute!important;inset:0!important}
+ #hero{
+   left:50%!important;top:50%!important;
+   width:calc((100% / 7) * .62)!important;
+   height:calc((100% / 7) * .78)!important;
+   max-width:none!important;max-height:none!important;
+   transform:translate(-50%,-47%)!important;
+   object-fit:contain!important;
+   object-position:center bottom!important;
+ }
+ .tile{box-sizing:border-box!important}
+}
+</style>
+
 </head><body><div id="rewardCG" onclick="closeReward()"><div id="rewardFrame">
 <img id="rewardImg"><div id="rewardTop"><b>KAMADOYA LEVEL UP!</b><br><span id="rewardLv"></span></div>
 <div id="rewardText"><span id="rewardMsg"></span><span id="rewardContinue">▶ Continue</span></div>
 </div></div><div id="game">
-<h1>OASIS QUEST β3.2.2 PORTRAIT FIX — MULTI BATTLE</h1>
+<h1>OASIS QUEST β3.2.3 PORTRAIT TILE FIX — MULTI BATTLE</h1>
 <div class="bar"><span id="coord"></span><span id="lead"></span><span id="partyText"></span><button id="rewardHistoryBtn" type="button">★ REWARD HISTORY</button></div>
 <div id="map"><div id="tileLayer"></div><img id="hero" src="assets/kamadoya_field.png"></div>
 <div class="controls"><button onclick="step(0,-1)">▲</button><br><button onclick="step(-1,0)">◀</button><button onclick="step(1,0)">▶</button><br><button onclick="step(0,1)">▼</button></div>
@@ -452,11 +470,25 @@ function need(lv){return Math.max(4,Math.round((20+(lv-1)*18+(lv-1)*(lv-1)*6)/6)
 function hash(a,b){let n=(a*374761393+b*668265263)^0x5bf03635;n=(n^(n>>13))*1274126177;return ((n^(n>>16))>>>0)/4294967295}
 function oasisAt(a,b){if(a===20&&b===50)return false;let d=Math.abs(a-20)+Math.abs(b-50);return hash(a,b)<(.20-Math.min(.07,d/900))}
 function terrain(a,b){if(a===20&&b===50)return"village";if(oasisAt(a,b))return"oasis";let r=hash(a+200,b-300);return r<.08?"water":r<.18?"mountain":r<.35?"forest":r<.43?"desert":"plain"}
+function portraitField(){return window.matchMedia("(max-width:700px) and (orientation:portrait)").matches}
+function fieldTileSize(){return portraitField()?map.clientWidth/7:64}
 function render(){
  tileLayer.innerHTML="";tileLayer.style.transform="translate(0px,0px)";tileLayer.style.transition="none";
- const W=11,H=9;
- for(let j=-4;j<=4;j++)for(let i=-5;i<=5;i++){let a=x+i,b=y+j,t=document.createElement("div");t.className="tile "+terrain(a,b);t.style.left=(i+5)*64+"px";t.style.top=(j+4)*64+"px";t.onclick=()=>{if(Math.abs(i)+Math.abs(j)===1)step(Math.sign(i),Math.sign(j))};tileLayer.appendChild(t)}
- hero.style.left=5*64+5+"px";hero.style.top=4*64+3+"px";
+ const s=fieldTileSize();
+ for(let j=-4;j<=4;j++)for(let i=-5;i<=5;i++){
+   let a=x+i,b=y+j,t=document.createElement("div");
+   t.className="tile "+terrain(a,b);
+   if(portraitField()){
+     t.style.left=(i+3)*s+"px"; t.style.top=(j+3)*s+"px";
+     t.style.width=s+"px"; t.style.height=s+"px";
+   }else{
+     t.style.left=(i+5)*64+"px"; t.style.top=(j+4)*64+"px";
+   }
+   t.onclick=()=>{if(Math.abs(i)+Math.abs(j)===1)step(Math.sign(i),Math.sign(j))};
+   tileLayer.appendChild(t)
+ }
+ if(!portraitField()){hero.style.left=5*64+5+"px";hero.style.top=4*64+3+"px"}
+ else {hero.style.left="50%";hero.style.top="50%"};
  document.getElementById("coord").textContent=`(${x}|${y})`;
  let k=chars.KAMADOYA;document.getElementById("lead").textContent=`KAMADOYA Lv${k.lv} EXP ${k.exp}/${need(k.lv)} HP ${k.hp}/${k.maxhp}`;
  document.getElementById("partyText").textContent="Party: "+active().map(n=>n+" Lv"+chars[n].lv).join(" / ");
@@ -465,8 +497,9 @@ function step(dx,dy){
  if(moving||inBattle||Math.abs(dx)+Math.abs(dy)!==1)return;
  let nx=Math.max(0,Math.min(99,x+dx)),ny=Math.max(0,Math.min(99,y+dy));if(nx===x&&ny===y)return;
  moving=true;hero.classList.add("walk");
+ const s=fieldTileSize();
  tileLayer.style.transition="transform .34s linear";
- tileLayer.style.transform=`translate(${-dx*64}px,${-dy*64}px)`;
+ tileLayer.style.transform=`translate(${-dx*s}px,${-dy*s}px)`;
  setTimeout(()=>{x=nx;y=ny;moving=false;hero.classList.remove("walk");render();if(oasisAt(x,y))setTimeout(startBattle,100)},350)
 }
 document.addEventListener("keydown",e=>{if(e.key==="ArrowUp")step(0,-1);if(e.key==="ArrowDown")step(0,1);if(e.key==="ArrowLeft")step(-1,0);if(e.key==="ArrowRight")step(1,0)});
@@ -701,8 +734,7 @@ document.querySelectorAll("#galleryTabs button").forEach(b=>b.addEventListener("
  }
  const map=document.getElementById("map");
  if(map){
-   map.addEventListener("click",portraitFieldTap,{passive:false});
-   map.addEventListener("touchend",portraitFieldTap,{passive:false});
+   map.addEventListener("pointerup",portraitFieldTap,{passive:false});
  }
 })();
 </script>
