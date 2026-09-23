@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>OASIS QUEST β3.2.3 PORTRAIT TILE FIX</title>
+<title>OASIS QUEST β3.3.1 MOBILE CONSISTENCY</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#17131d;color:#fff;font-family:monospace;overflow-x:hidden}
 #game{max-width:980px;margin:auto;background:#28203a;min-height:100vh;padding:10px}
@@ -334,13 +334,92 @@ html,body{max-width:100%;overflow-x:hidden}
 }
 </style>
 
+
+<style id="travianField33">
+#map{background:#a8c268!important}
+.tile{background-size:cover!important;background-position:center!important;border:0!important;box-shadow:none!important}
+.tile.grass{background-image:url("assets/travian_grass.png")!important}
+.tile.forest{background-image:url("assets/travian_forest.png")!important}
+.tile.mountain{background-image:url("assets/travian_mountain.png")!important}
+.tile.water{background-image:url("assets/travian_water.png")!important}
+.tile.desert{background-image:url("assets/travian_desert.png")!important}
+.tile.oasis{background-image:url("assets/travian_oasis.png")!important}
+.tile.home{background-image:url("assets/travian_home.png")!important}
+#coordRailY,#coordRailX{position:absolute;z-index:55;pointer-events:none;color:#fff;font-family:monospace;font-weight:900;text-shadow:0 1px 3px #000}
+#coordRailY{left:2px;top:0;height:100%;width:29px;display:grid;grid-template-rows:repeat(7,1fr);align-items:center;text-align:center}
+#coordRailX{left:0;bottom:2px;width:100%;height:24px;display:grid;grid-template-columns:repeat(7,1fr);align-items:center;text-align:center}
+.coordTick{background:rgba(7,27,58,.72);border:1px solid rgba(232,195,111,.75);border-radius:4px;font-size:10px;padding:2px 1px}
+.coordTick.current{background:#e8c36f;color:#10284b;text-shadow:none;font-size:12px}
+@media(max-width:700px) and (orientation:portrait){
+ #coordRailY{width:25px}
+ #coordRailX{height:22px}
+ .coordTick{font-size:9px}
+ .coordTick.current{font-size:11px}
+}
+</style>
+
+
+<style id="mobileConsistency331">
+@media(max-width:700px) and (orientation:portrait){
+  #map{
+    width:calc(100vw - 12px)!important;
+    height:calc(100vw - 12px)!important;
+    max-width:448px!important;
+    max-height:448px!important;
+    aspect-ratio:1/1!important;
+    position:relative!important;
+    overflow:hidden!important;
+    touch-action:manipulation!important;
+  }
+  #tileLayer{position:absolute!important;inset:0!important}
+  #hero{
+    position:absolute!important;
+    left:50%!important;top:50%!important;
+    width:calc((100% / 7) * .60)!important;
+    height:calc((100% / 7) * .76)!important;
+    transform:translate(-50%,-48%)!important;
+    max-width:none!important;max-height:none!important;
+    pointer-events:none!important;z-index:60!important;
+  }
+  #coordRailY{
+    left:2px!important;top:0!important;bottom:0!important;
+    height:100%!important;width:24px!important;
+    grid-template-rows:repeat(7,minmax(0,1fr))!important;
+    z-index:70!important;pointer-events:none!important;
+  }
+  #coordRailX{
+    left:0!important;right:0!important;bottom:2px!important;
+    width:100%!important;height:22px!important;
+    grid-template-columns:repeat(7,minmax(0,1fr))!important;
+    z-index:70!important;pointer-events:none!important;
+  }
+  #coordRailY .coordTick,#coordRailX .coordTick{
+    align-self:center!important;justify-self:center!important;
+    min-width:18px!important;box-sizing:border-box!important;
+    font-size:9px!important;line-height:14px!important;padding:1px 2px!important;
+  }
+  #coordRailY .coordTick.current,#coordRailX .coordTick.current{
+    font-size:10px!important;font-weight:900!important;
+  }
+
+  /* Keep portrait battle visually large after the field redesign. */
+  .battlebox{width:100vw!important;height:100dvh!important;min-height:100dvh!important}
+  #enemies{left:29%!important;right:0!important;top:8%!important;bottom:32%!important}
+  .enemy{width:34%!important;height:100%!important}
+  .enemy img{width:100%!important;height:84%!important;object-fit:contain!important}
+  #ui{height:32%!important;grid-template-columns:43% 57%!important}
+  .cmd button{min-height:44px!important;font-size:15px!important}
+  .cmd button:first-child{min-height:66px!important;font-size:21px!important}
+}
+</style>
+
 </head><body><div id="rewardCG" onclick="closeReward()"><div id="rewardFrame">
 <img id="rewardImg"><div id="rewardTop"><b>KAMADOYA LEVEL UP!</b><br><span id="rewardLv"></span></div>
 <div id="rewardText"><span id="rewardMsg"></span><span id="rewardContinue">▶ Continue</span></div>
 </div></div><div id="game">
-<h1>OASIS QUEST β3.2.3 PORTRAIT TILE FIX — MULTI BATTLE</h1>
+<h1>OASIS QUEST β3.3.1 MOBILE CONSISTENCY — MULTI BATTLE</h1>
 <div class="bar"><span id="coord"></span><span id="lead"></span><span id="partyText"></span><button id="rewardHistoryBtn" type="button">★ REWARD HISTORY</button></div>
-<div id="map"><div id="tileLayer"></div><img id="hero" src="assets/kamadoya_field.png"></div>
+<div id="map"><div id="coordRailY" aria-hidden="true"></div><div id="coordRailX" aria-hidden="true"></div><div id="tileLayer"></div><img id="hero" src="assets/kamadoya_field.png"></div>
 <div class="controls"><button onclick="step(0,-1)">▲</button><br><button onclick="step(-1,0)">◀</button><button onclick="step(1,0)">▶</button><br><button onclick="step(0,1)">▼</button></div>
 <div class="small">Click/tap an adjacent tile to walk one square. Oases become more dangerous farther from home.</div>
 </div>
@@ -736,6 +815,49 @@ document.querySelectorAll("#galleryTabs button").forEach(b=>b.addEventListener("
  if(map){
    map.addEventListener("pointerup",portraitFieldTap,{passive:false});
  }
+})();
+</script>
+
+
+<script id="coordRails33">
+(function(){
+ const ry=document.getElementById("coordRailY"), rx=document.getElementById("coordRailX");
+ function updateRails(){
+   if(!ry||!rx||typeof x==="undefined"||typeof y==="undefined") return;
+   ry.innerHTML=""; rx.innerHTML="";
+   for(let j=-3;j<=3;j++){
+     const e=document.createElement("span");e.className="coordTick"+(j===0?" current":"");
+     e.textContent=y+j;ry.appendChild(e);
+   }
+   for(let i=-3;i<=3;i++){
+     const e=document.createElement("span");e.className="coordTick"+(i===0?" current":"");
+     e.textContent=x+i;rx.appendChild(e);
+   }
+ }
+ const obs=new MutationObserver(updateRails);
+ const c=document.getElementById("coord");
+ if(c) obs.observe(c,{childList:true,subtree:true,characterData:true});
+ window.addEventListener("resize",updateRails);
+ setTimeout(updateRails,0);
+})();
+</script>
+
+
+<script id="mobileConsistency331js">
+(function(){
+ let lastPortrait=window.matchMedia("(max-width:700px) and (orientation:portrait)").matches;
+ function syncFieldAfterViewportChange(){
+   const now=window.matchMedia("(max-width:700px) and (orientation:portrait)").matches;
+   if(typeof render==="function"){
+     requestAnimationFrame(function(){ render(); });
+   }
+   lastPortrait=now;
+ }
+ window.addEventListener("orientationchange",function(){setTimeout(syncFieldAfterViewportChange,180)});
+ window.addEventListener("resize",function(){
+   clearTimeout(window.__oqResize331);
+   window.__oqResize331=setTimeout(syncFieldAfterViewportChange,120);
+ });
 })();
 </script>
 
