@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>OASIS QUEST β3.3.5 ALL PARTY BATTLE ART</title>
+<title>OASIS QUEST β3.4.2 MOBILE OK BUTTON FIX</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#17131d;color:#fff;font-family:monospace;overflow-x:hidden}
 #game{max-width:980px;margin:auto;background:#28203a;min-height:100vh;padding:10px}
@@ -455,6 +455,120 @@ body:has(#rewardGallery:not([hidden])) #coordRailY{
 }
 </style>
 
+
+<style id="mobileBattleSystem341">
+/* Battle readability: calm background + dedicated enemy stage */
+.battlebox{
+ background:
+   linear-gradient(to bottom,rgba(112,196,225,.92) 0 38%,rgba(239,211,145,.94) 38% 72%,rgba(119,157,91,.94) 72% 100%)!important;
+}
+#enemies{
+ background:rgba(255,247,211,.18);
+ border-radius:18px;
+}
+.enemy{
+ background:rgba(255,248,220,.16)!important;
+ border-radius:12px!important;
+}
+.enemy img{
+ filter:drop-shadow(0 5px 2px rgba(0,0,0,.42))!important;
+}
+.enemy span{
+ background:rgba(5,28,60,.94)!important;
+}
+
+/* Field UI can never leak into battle. */
+body.battle-active #map,
+body.battle-active .controls,
+body.battle-active #coordRailX,
+body.battle-active #coordRailY{visibility:hidden!important;pointer-events:none!important}
+
+@media(max-width:700px) and (orientation:portrait){
+ #battle{padding:0!important}
+ .battlebox{
+   width:100%!important;height:100dvh!important;min-height:100dvh!important;
+   border-width:3px!important;
+   background:
+    linear-gradient(to bottom,#86cfe7 0 39%,#efd99c 39% 72%,#83a66d 72% 100%)!important;
+ }
+ #battleTitle{left:2%!important;top:1%!important;padding:4px 9px!important}
+ #battleTitle b{font-size:17px!important}
+ #battleTitle small{font-size:9px!important}
+ #areaTag{right:2%!important;top:1%!important;padding:5px 9px!important;font-size:11px!important}
+
+ /* party stays clearly on the left, but no field hero */
+ #party{
+   left:1%!important;top:11%!important;width:31%!important;height:50%!important;
+   z-index:12!important;
+ }
+ #party .actor{
+   width:96%!important;height:24%!important;max-height:122px!important;
+   object-fit:contain!important;
+ }
+ /* enemy stage is larger, cleaner and centered */
+ #enemies{
+   left:34%!important;right:1.5%!important;top:15%!important;bottom:34%!important;
+   padding:8px 4px 4px!important;gap:3px!important;
+   align-items:flex-end!important;
+   background:rgba(255,250,225,.24)!important;
+   border:2px solid rgba(255,240,181,.65)!important;
+ }
+ .enemy{
+   width:48%!important;height:100%!important;min-width:0!important;
+   display:flex!important;flex-direction:column!important;justify-content:flex-end!important;
+ }
+ .enemy img{
+   width:100%!important;height:72%!important;min-height:0!important;
+   object-fit:contain!important;image-rendering:auto!important;
+ }
+ .enemy span{
+   font-size:11px!important;line-height:1.15!important;padding:4px 1px!important;
+ }
+ /* 3–4 enemies: let them fit without becoming tiny cards */
+ #enemies:has(.enemy:nth-child(3)) .enemy{width:32%!important}
+ #enemies:has(.enemy:nth-child(4)) .enemy{width:24%!important}
+ #enemies:has(.enemy:nth-child(3)) .enemy img{height:68%!important}
+ #enemies:has(.enemy:nth-child(4)) .enemy img{height:64%!important}
+
+ /* Keep every battle command on screen. */
+ #ui{
+   left:1%!important;right:1%!important;bottom:1%!important;height:31%!important;
+   grid-template-columns:31% 69%!important;gap:5px!important;
+ }
+ .panel{padding:5px!important;border-width:3px!important;overflow:hidden!important}
+ .cmd{display:grid!important;grid-template-rows:repeat(4,1fr)!important;height:100%!important}
+ .cmd button,.cmd button:first-child{
+   min-height:0!important;height:auto!important;margin:1px!important;padding:2px 3px!important;
+   font-size:14px!important;line-height:1.05!important;
+ }
+ .cmd button:first-child{font-size:17px!important}
+ #status{font-size:10px!important;line-height:1.25!important}
+ #msg{font-size:13px!important;line-height:1.25!important}
+}
+</style>
+
+
+<style id="mobileOkButton342">
+@media(max-width:700px){
+  /* Slightly larger OK / confirmation buttons on mobile. */
+  button.ok,
+  #okBtn,
+  .okBtn,
+  .resultOk,
+  .rewardOk,
+  .levelOk,
+  .joinOk,
+  [data-action="ok"]{
+    min-width:92px!important;
+    min-height:48px!important;
+    padding:9px 18px!important;
+    font-size:17px!important;
+    line-height:1.1!important;
+    border-radius:8px!important;
+  }
+}
+</style>
+
 </head><body><div id="openingScreen" role="dialog" aria-label="OASIS QUEST title screen">
 <img src="assets/opening_title.png" alt="OASIS QUEST title art featuring KAMADOYA and Uma-chan">
 <button id="openingStart" type="button">▶ NEW GAME</button>
@@ -463,7 +577,7 @@ body:has(#rewardGallery:not([hidden])) #coordRailY{
 <img id="rewardImg"><div id="rewardTop"><b>KAMADOYA LEVEL UP!</b><br><span id="rewardLv"></span></div>
 <div id="rewardText"><span id="rewardMsg"></span><span id="rewardContinue">▶ Continue</span></div>
 </div></div><div id="game">
-<h1>OASIS QUEST β3.4 OPENING TITLE — MULTI BATTLE</h1>
+<h1>OASIS QUEST β3.4.2 MOBILE OK BUTTON FIX — MULTI BATTLE</h1>
 <div class="bar"><span id="coord"></span><span id="lead"></span><span id="partyText"></span><button id="rewardHistoryBtn" type="button">★ REWARD HISTORY</button></div>
 <div id="map"><div id="coordRailY" aria-hidden="true"></div><div id="coordRailX" aria-hidden="true"></div><div id="tileLayer"></div><img id="hero" src="assets/kamadoya_field.png"></div>
 <div class="controls"><button onclick="step(0,-1)">▲</button><br><button onclick="step(-1,0)">◀</button><button onclick="step(1,0)">▶</button><br><button onclick="step(0,1)">▼</button></div>
@@ -957,6 +1071,26 @@ document.querySelectorAll("#galleryTabs button").forEach(b=>b.addEventListener("
      e.preventDefault();beginGame();
    }
  });
+})();
+</script>
+
+
+<script id="battleSystem341">
+(function(){
+ const battle=document.getElementById("battle");
+ function syncBattleMode(){
+   const on=!!(battle && battle.classList.contains("show"));
+   document.body.classList.toggle("battle-active",on);
+   const map=document.getElementById("map");
+   const hero=document.getElementById("hero");
+   if(map) map.setAttribute("aria-hidden",on?"true":"false");
+   if(hero) hero.style.display=on?"none":"";
+ }
+ if(battle){
+   new MutationObserver(syncBattleMode).observe(battle,{attributes:true,attributeFilter:["class"]});
+ }
+ window.addEventListener("pageshow",syncBattleMode);
+ setTimeout(syncBattleMode,0);
 })();
 </script>
 

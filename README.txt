@@ -53,3 +53,17 @@
 - NEW GAME starts the existing field game; tapping the title art or Enter/Space also starts.
 - Desktop and mobile opening layouts included.
 - β3.3.5 party battle art and all existing gameplay retained.
+
+
+β3.4.1 MOBILE BATTLE SYSTEM FIX
+- Simplified battle background so animal silhouettes are easier to read.
+- Added a light dedicated enemy stage and stronger enemy drop shadows.
+- Field map, coordinate rails and field KAMADOYA are forcibly hidden during battle.
+- Mobile battle layout rebalanced: larger enemy area and all four commands stay visible.
+- Existing opening screen, party art, progression and rewards retained.
+
+
+β3.4.2 MOBILE OK BUTTON FIX
+- Slightly enlarged mobile OK/confirmation buttons for easier tapping.
+- Desktop button sizing unchanged.
+- β3.4.1 mobile battle fixes retained.
